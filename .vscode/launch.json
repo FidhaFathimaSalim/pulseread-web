@@ -1,0 +1,44 @@
+{
+  // EDIT THE TWO "python" PATHS BELOW to point at your actual venv_pulseread
+  // and venv_openrppg interpreters before using these (they usually live
+  // outside this project folder, e.g. wherever your open-rppg project is).
+  //
+  // Windows example:
+  //   "python": "C:\\Users\\huawei\\Downloads\\open-rppg-main\\venv_pulseread\\Scripts\\python.exe"
+  // macOS/Linux example:
+  //   "python": "/home/you/venvs/venv_pulseread/bin/python"
+
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "PulseRead: Upload Server (app.py)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/backend/app.py",
+      "cwd": "${workspaceFolder}/backend",
+      "console": "integratedTerminal",
+      "python": "EDIT_ME/venv_pulseread/Scripts/python.exe",
+      "justMyCode": true
+    },
+    {
+      "name": "PulseRead: Live Webcam Server (live_server.py)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/backend/live_server.py",
+      "cwd": "${workspaceFolder}/backend",
+      "console": "integratedTerminal",
+      "python": "EDIT_ME/venv_openrppg/Scripts/python.exe",
+      "justMyCode": true
+    }
+  ],
+  "compounds": [
+    {
+      "name": "PulseRead: Run Both Servers",
+      "configurations": [
+        "PulseRead: Upload Server (app.py)",
+        "PulseRead: Live Webcam Server (live_server.py)"
+      ],
+      "stopAll": true
+    }
+  ]
+}

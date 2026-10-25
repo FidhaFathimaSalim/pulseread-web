@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PulseRead — Contactless Heart Rate &amp; Stress Estimation</title>
+<link rel="stylesheet" href="css/styles.css?v=2">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="container">
+    <div class="brand"><img src="PulseRead_logo.png" alt="PulseRead Logo" class="brand-logo"> PulseRead</div>
+    <div class="nav-links">
+      <a href="index.html" class="active">Home</a>
+      <a href="dashboard.html">How It Works</a>
+      <a href="#features">Features</a>
+      <a href="#who">Who It's For</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <a href="dashboard.html" class="btn btn-primary">Get Started</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <div>
+      <span class="pill">⚡ AI-POWERED HEALTH MONITORING</span>
+      <h1>Contactless Heart Rate, Breathing &amp; Stress Estimation</h1>
+      <p class="lead">Using Remote Photoplethysmography (rPPG) and Deep Learning</p>
+      <p class="lead">PulseRead analyzes a short facial video to estimate your Heart Rate, HRV, Breathing Rate and Stress Level — for one person or several, with a guided stress-response challenge. No wearables, no contact.</p>
+      <div class="hero-stats">
+        <div class="stat"><div class="ic">🛡</div><div><b>100% Contactless</b><span>No wearables needed</span></div></div>
+        <div class="stat"><div class="ic">🧩</div><div><b>AI-Powered</b><span>Deep Learning Model</span></div></div>
+        <div class="stat"><div class="ic">☀</div><div><b>Works on CPU</b><span>Lightweight &amp; Fast</span></div></div>
+        <div class="stat"><div class="ic">🔒</div><div><b>Privacy First</b><span>Your data stays safe</span></div></div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <!-- Outer frame -->
+      <div class="hero-outer-frame">
+
+        <!-- Inner card: face fills completely -->
+        <div class="frame hero-signal-frame">
+          <img src="face1.jpg" alt="Face" class="face-img">
+          <div class="scan-box"></div>
+          <canvas id="heroWaveCanvas" class="hero-wave-canvas"></canvas>
+          <div class="signal-overlay-badges">
+            <span class="sig-badge sig-badge-live"><span class="sig-dot"></span> LIVE</span>
+            <span class="sig-badge sig-badge-hr">❤ <span id="heroHr">72</span> BPM</span>
+          </div>
+        </div>
+
+        <!-- Waves video strip pinned to bottom of outer frame -->
+        <div class="hero-waves-strip">
+          <video autoplay muted loop playsinline>
+            <source src="waves.mp4" type="video/mp4">
+          </video>
+          <div class="hero-waves-fade"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="section section-light" id="about">
+  <div class="container">
+    <h2 class="center">Why Choose <span class="accent">PulseRead</span>?</h2>
+    <div class="grid-5">
+      <div class="feature-card">
+        <div class="ic" style="background:#fbdce3;color:#e11d48;">❤</div>
+        <h3>Contactless</h3>
+        <p>Measures heart rate without any physical contact or devices.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ic" style="background:#e6e0ff;color:#7c5cfc;">🧠</div>
+        <h3>AI-Powered</h3>
+        <p>Advanced deep learning model for high accuracy.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ic" style="background:#d7f3dd;color:#16a34a;">📈</div>
+        <h3>HRV &amp; Stress</h3>
+        <p>Provides HRV metrics and stress level analysis.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ic" style="background:#e6e0ff;color:#7c5cfc;">📄</div>
+        <h3>PDF Report</h3>
+        <p>Get a detailed wellness report with recommendations.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ic" style="background:#dbeafe;color:#2563eb;">💻</div>
+        <h3>Lightweight</h3>
+        <p>Runs on CPU, fast and efficient deployment.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section section-light" id="new">
+  <div class="container">
+    <h2 class="center">Beyond Heart Rate <span class="new-badge">New</span></h2>
+    <p class="pipeline-sub">The same ordinary facial video now tells you three more things.</p>
+    <div class="grid-3">
+      <div class="feature-card v2-card">
+        <div class="ic" style="background:#cffafe;color:#0891b2;">🫁</div>
+        <h3>Breathing Rate</h3>
+        <p>Cardiac <i>and</i> respiratory information from one video. Three breathing signatures in the pulse are fused into one rate with a confidence label.</p>
+        <ul><li>Works for uploads and live webcam</li><li>New “Breathing” graph tab</li></ul>
+        <a class="v2-link" href="dashboard.html?feature=breathing">Try it →</a>
+      </div>
+      <div class="feature-card v2-card">
+        <div class="ic" style="background:#fee2e2;color:#dc2626;">🧪</div>
+        <h3>Physiological Challenge</h3>
+        <p>A guided baseline → challenge → recovery experiment. See how far your heart rate and HRV move, and how fast you recover.</p>
+        <ul><li>Mental-arithmetic or slow-breathing protocol</li><li>Report with timeline chart + PDF</li></ul>
+        <a class="v2-link" href="dashboard.html?feature=challenge">Try it →</a>
+      </div>
+      <div class="feature-card v2-card">
+        <div class="ic" style="background:#e6e0ff;color:#7c5cfc;">👥</div>
+        <h3>Multi-person Analysis</h3>
+        <p>One webcam, several faces. Each person is tracked and measured independently, side by side.</p>
+        <ul><li>Up to 4 people at once</li><li>Click a person to inspect them</li></ul>
+        <a class="v2-link" href="dashboard.html?feature=multi">Try it →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="features">
+  <div class="container">
+    <h2 class="center">How <span class="accent">PulseRead</span> Works</h2>
+    <p class="pipeline-sub">A complete AI pipeline — from raw facial video to clinical-grade heart rate, HRV &amp; stress insights.</p>
+
+    <div class="pipeline-grid">
+
+      <!-- Row 1: Steps 01 – 04 -->
+      <div class="pipeline-row">
+        <div class="pipe-card">
+          <div class="pipe-num">01</div>
+          <div class="pipe-icon">🎬</div>
+          <h4>Video Pre-Check</h4>
+          <p>Validates duration, brightness, and codec before any processing begins.</p>
+          <div class="pipe-tag">Input Validation</div>
+        </div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-card">
+          <div class="pipe-num">02</div>
+          <div class="pipe-icon">🔲</div>
+          <h4>Face Detection &amp; Multi-ROI</h4>
+          <p>Extracts forehead and cheek ROIs using MediaPipe's 468 landmarks. Live mode can track several faces at once.</p>
+          <div class="pipe-tag">MediaPipe · 468 Landmarks</div>
+        </div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-card">
+          <div class="pipe-num">03</div>
+          <div class="pipe-icon">📡</div>
+          <h4>Dual-Path rPPG Extraction</h4>
+          <p>Runs two parallel paths — downsampled for BPM and full FPS for HRV detail.</p>
+          <div class="pipe-tag">Green Channel · Dual FPS</div>
+        </div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-card">
+          <div class="pipe-num">04</div>
+          <div class="pipe-icon">🧠</div>
+          <h4>FFT + CNN Ensemble</h4>
+          <p>CNN and FFT run in ensemble; confidence threshold picks the best BPM estimate.</p>
+          <div class="pipe-tag">Custom CNN · FFT · Ensemble</div>
+        </div>
+      </div>
+
+      <!-- Bridge: right-side ↓ connecting row 1 → row 2 -->
+      <div class="pipeline-bridge">
+        <div class="pipe-bridge-inner">
+        </div>
+      </div>
+
+      <!-- Row 2: Steps 05 – 07 -->
+      <div class="pipeline-row">
+        <div class="pipe-card">
+          <div class="pipe-num">05</div>
+          <div class="pipe-icon">💓</div>
+          <h4>HRV &amp; PRV Computation</h4>
+          <p>Detects IBIs from peaks and computes RMSSD, SDNN, plus a fused FM + AM + baseline breathing rate.</p>
+          <div class="pipe-tag">RMSSD · SDNN · Respiration</div>
+        </div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-card">
+          <div class="pipe-num">06</div>
+          <div class="pipe-icon">📊</div>
+          <h4>Stress &amp; Personal Baseline</h4>
+          <p>Classifies stress (Very Low→High), benchmarks against your own history, and runs baseline → challenge → recovery experiments.</p>
+          <div class="pipe-tag">Stress · Baseline · Challenge Mode</div>
+        </div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-card">
+          <div class="pipe-num">07</div>
+          <div class="pipe-icon">📄</div>
+          <h4>Results, Explainability &amp; Report</h4>
+          <p>Visualises signals and bundles insights into a downloadable PDF report.</p>
+          <div class="pipe-tag">PDF Report · Visualisations · AI Insights</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="section section-light" id="who">
+  <div class="container">
+    <h2 class="center">Who Is <span class="accent">PulseRead</span> For?</h2>
+    <p class="pipeline-sub">People who want to understand how their body <i>responds</i> and recovers — not just see one number.</p>
+    <div class="grid-5">
+      <div class="feature-card who-card">
+        <div class="ic" style="background:#e6e0ff;color:#7c5cfc;">🎓</div>
+        <h3>Students &amp; Exam Candidates</h3>
+        <p>See how study stress affects your body, and test whether a short breathing break really helps.</p>
+        <span class="who-tag">Best for: Challenge test</span>
+      </div>
+      <div class="feature-card who-card">
+        <div class="ic" style="background:#cffafe;color:#0891b2;">🧘</div>
+        <h3>Wellness, Yoga &amp; Meditation</h3>
+        <p>Check whether slow, paced breathing raises your HRV and calms your body.</p>
+        <span class="who-tag">Best for: Paced breathing</span>
+      </div>
+      <div class="feature-card who-card">
+        <div class="ic" style="background:#fee2e2;color:#dc2626;">🔬</div>
+        <h3>Teachers, Trainers &amp; Researchers</h3>
+        <p>Monitor vital signs and generate individual wellness reports for multiple people simultaneously.</p>
+        <span class="who-tag">Best for: Multi-person + report</span>
+      </div>
+      <div class="feature-card who-card">
+        <div class="ic" style="background:#d7f3dd;color:#16a34a;">🏃</div>
+        <h3>Fitness Users</h3>
+        <p>Check resting heart rate and HRV on rest days to judge recovery — no wearable needed.</p>
+        <span class="who-tag">Best for: HRV &amp; trends</span>
+      </div>
+      <div class="feature-card who-card">
+        <div class="ic" style="background:#fef3c7;color:#d97706;">💻</div>
+        <h3>Desk Workers</h3>
+        <p>A quick webcam check during the day to notice tiredness or long-running stress.</p>
+        <span class="who-tag">Best for: Live webcam</span>
+      </div>
+    </div>
+
+    <div class="who-note">
+      <b>Good to know:</b> PulseRead is built for wellness self-monitoring, learning and low-cost research.
+      It is <b>not a medical device</b> and cannot diagnose anything. If you have a heart condition or need to make a medical
+      decision, please talk to a doctor.
+    </div>
+    <div class="center" style="margin-top:22px;"><a href="dashboard.html" class="btn btn-primary">Try PulseRead now →</a></div>
+  </div>
+</section>
+
+<footer class="footer" id="contact">
+  <div class="container">
+    <div>
+      <div class="brand" style="margin-bottom:12px;"><img src="PulseRead_logo.png" alt="PulseRead Logo" class="brand-logo"> PulseRead</div>
+      <p>AI-powered contactless heart rate and stress estimation from facial video using rPPG and deep learning.</p>
+    </div>
+    <div>
+      <h4>Quick Links</h4>
+      <ul><li><a href="index.html">Home</a></li><li><a href="dashboard.html">How It Works</a></li><li><a href="#features">Features</a></li></ul>
+    </div>
+    <div>
+      <h4>Contact Us</h4>
+      <ul><li>✉ fidhafathimasalim73@nirmalacollege.ac.in</li><li>☎ +91 9207941105</li><li>📍 Kerala, India</li></ul>
+    </div>
+  </div>
+  <div class="container bottom">
+    <span>© 2026 PulseRead | All rights reserved.</span>
+    <span>Privacy Policy · Terms of Use · Contact Us</span>
+  </div>
+</footer>
+
+</body>
+<script src="js/signal-waves.js?v=2"></script>
+</html>

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PulseRead — Dashboard</title>
+<link rel="stylesheet" href="css/styles.css?v=2">
+<!-- Local copies first (put the files in frontend/js/); CDN only as a fallback -->
+<script src="js/socket.io.min.js?v=2" onerror="this.onerror=null;var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.min.js';document.head.appendChild(s);"></script>
+<script src="js/chart.umd.min.js?v=2" onerror="this.onerror=null;var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.js';document.head.appendChild(s);"></script>
+</head>
+<body>
+
+<div class="dash-header">
+  <div class="container">
+    <div class="brand"><img src="PulseRead_logo.png" alt="PulseRead Logo" class="brand-logo"> PulseRead</div>
+    <div class="mode-toggle">
+      <button id="tabUpload" class="active">☁ Upload Video</button>
+      <button id="tabWebcam">🎥 One-person Webcam <span class="dot"></span></button>
+      <button id="tabMulti">👥 Multi-person Webcam <span class="dot"></span></button>
+    </div>
+    <a href="index.html" class="btn btn-dark">← Home</a>
+  </div>
+</div>
+
+<main class="dash-main">
+  <div class="container">
+
+    <!-- v2 feature strip: makes the new features visible and one click away -->
+    <div class="v2-strip" id="v2Strip">
+      <button class="v2-chip" data-feature="breathing" type="button">
+        <div class="ic">🫁</div>
+        <div><b>Breathing rate</b>
+          <span>Shown for videos and live. Open the “Breathing” graph tab.</span>
+          <em>View breathing graph →</em></div>
+      </button>
+      <button class="v2-chip" data-feature="challenge" type="button">
+        <div class="ic">🧪</div>
+        <div><b>Physiological challenge</b>
+          <span>Baseline → challenge → recovery with the one-person webcam.</span>
+          <em>Open challenge panel →</em></div>
+      </button>
+      <button class="v2-chip" data-feature="multi" type="button">
+        <div class="ic">👥</div>
+        <div><b>Multi-person</b>
+          <span>Measure up to 4 faces from one webcam.</span>
+          <em>Switch to multi-person →</em></div>
+      </button>
+    </div>
+
+    <div class="dash-grid">
+
+      <!-- ============ LEFT: Upload OR Webcam capture ============ -->
+      <div id="panelUpload" class="card">
+        <div class="card-head"><h3>Live / Video Analysis</h3></div>
+        <div id="uploadBox" class="upload-box">
+          <!-- Upload prompt (hidden once a file is chosen) -->
+          <div class="upload-prompt">
+            <div class="cloud-ic">☁</div>
+            <b>Upload Your Facial Video</b>
+            <small>Drag &amp; drop your video here<br>or</small>
+            <button class="btn btn-primary" id="browseBtn">Browse Files</button>
+            <div class="upload-hint">Supported formats: .mp4, .avi<br>Recommended duration: 30s – 120s (breathing needs at least 25 s)</div>
+          </div>
+          <input type="file" id="fileInput" accept="video/mp4,video/avi,video/x-msvideo">
+
+          <!-- Preview panel (shown inside the same box once a file is chosen) -->
+          <div id="previewPanel" class="preview-panel">
+            <div class="preview-label">
+              <span>Preview</span>
+              <button class="upload-change-btn" id="changeFileBtn">↩ Change file</button>
+            </div>
+            <div class="preview-media">
+              <video id="previewVideo" controls></video>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:10px 14px;">
+              <span class="badge badge-green hidden" id="badgeFace"><span class="d"></span> Face detected</span>
+              <span class="badge badge-teal hidden" id="badgeRoi"><span class="d"></span> Forehead ROI detected</span>
+            </div>
+          </div>
+        </div>
+
+        <button id="analyzeBtn" class="btn btn-primary hidden" style="width:100%;margin-top:14px;justify-content:center;">Analyze Video</button>
+        <div id="uploadStatus" style="margin-top:10px;font-size:12.5px;color:var(--muted);"></div>
+      </div>
+
+      <div id="panelWebcam" class="webcam-shell hidden">
+        <div class="webcam-top">
+          <div>
+            <div class="webcam-title"><span class="dot dot-idle" id="webcamDot"></span> Real-time Webcam Capture</div>
+            <div class="webcam-sub">Frame-by-frame rPPG analysis, streamed live to the model</div>
+          </div>
+          <span class="sensor-pill"><span class="p"></span> SENSOR MODE: PHOTOPLETHYSMOGRAPHY (rPPG)</span>
+        </div>
+
+        <div class="webcam-stage" id="webcamStage">
+          <div class="rec-badge" id="recBadge"><span class="d"></span> <span id="recTimer">00:00</span></div>
+          <video id="webcamVideo" autoplay playsinline muted></video>
+          <div class="webcam-standby" id="webcamStandby">
+            <div class="ring">👤</div>
+            <h4>Webcam standby mode</h4>
+            <p>Position your face inside the frame and press start</p>
+          </div>
+        </div>
+
+        <div class="webcam-footbar">
+          <div class="foot-chip"><div class="l">📶 Connection</div><div class="v" id="connStatus">Not connected</div></div>
+          <div class="foot-chip"><div class="l">💓 Live BPM</div><div class="v" id="liveBpmChip">--</div></div>
+          <div class="foot-chip"><div class="l">🎚 Buffer</div><div class="v" id="bufferChip">0s / 20s</div></div>
+        </div>
+
+        <div class="webcam-cta">
+          <button class="btn btn-primary" id="startWebcamBtn">🎥 Start Webcam →</button>
+          <button class="btn btn-primary stop hidden" id="stopWebcamBtn">■ Stop Webcam</button>
+        </div>
+
+        <div class="tips-row">
+          <div class="tip">👁 Look at camera</div>
+          <div class="tip">🙂 Keep face steady</div>
+          <div class="tip">☀ Good lighting</div>
+          <div class="tip">⏱ Live, continuous analysis</div>
+        </div>
+      </div>
+
+      <!-- ============ RIGHT: Key Results ============ -->
+      <div class="card">
+        <div class="card-head">
+          <h3>Key Results</h3>
+          <button class="btn btn-green" id="downloadReportBtn" style="padding:8px 14px;font-size:12.5px;" disabled>⬇ Download PDF Report</button>
+        </div>
+        <div class="results-grid">
+          <div class="result-tile tile-red">
+            <div class="top"><span class="label">Heart Rate</span><span class="icon-badge">❤</span></div>
+            <div><span class="value" id="valBpm">--</span><span class="unit">BPM</span></div>
+            <div class="sub" id="subBpm">Awaiting data</div>
+          </div>
+          <div class="result-tile tile-teal">
+            <div class="top"><span class="label">HRV</span><span class="icon-badge">〰</span></div>
+            <div><span class="value" id="valHrv">--</span><span class="unit">ms</span></div>
+            <div class="sub" id="subHrv">Awaiting data</div>
+          </div>
+          <div class="result-tile tile-amber">
+            <div class="top"><span class="label">Stress Level</span><span class="icon-badge">🙂</span></div>
+            <div><span class="value" id="valStress" style="font-size:19px;">--</span></div>
+            <div class="sub" id="subStress">Awaiting data</div>
+          </div>
+          <div class="result-tile tile-blue">
+            <div class="top"><span class="label">Signal Quality</span><span class="icon-badge">🛡</span></div>
+            <div><span class="value" id="valQuality">--</span><span class="unit">%</span></div>
+            <div class="sub" id="subQuality">Awaiting data</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ Health Insights (full width under the two, matches mockup's 3rd column via wrap) ============ -->
+    <div class="dash-grid-3">
+
+      <div class="card">
+        <div class="card-head">
+          <h3>Signal Graphs</h3>
+          <div class="tabs-mini">
+            <button class="active" data-graph="rppg">rPPG Signal</button>
+            <button data-graph="hrv">HRV Trend</button>
+            <button data-graph="hr">Heart Rate</button>
+            <button data-graph="resp">Breathing</button>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="signalCanvas" height="220"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>HRV Analysis</h3></div>
+        <div class="chart-wrap">
+          <canvas id="hrvCanvas" height="220"></canvas>
+        </div>
+        <div class="hrv-numbers">
+          <div class="hrv-num-card"><div class="l">RMSSD</div><div class="v" id="numRmssd">-- ms</div></div>
+          <div class="hrv-num-card"><div class="l">SDNN</div><div class="v" id="numSdnn">-- ms</div></div>
+          <div class="hrv-num-card"><div class="l">Mean RR</div><div class="v" id="numMeanrr">-- ms</div></div>
+          <div class="hrv-num-card"><div class="l">Breathing</div><div class="v" id="numResp">-- /min</div></div>
+        </div>
+      </div>
+
+      <div class="card stress-card">
+        <div class="card-head"><h3>Stress Level</h3></div>
+        <div class="gauge-wrap">
+          <canvas id="gaugeCanvas" width="300" height="200"></canvas>
+          <div style="text-align:center;margin-top:2px;">
+            <div style="font-size:20px;font-weight:800;" id="gaugeLabel">--</div>
+            <div style="font-size:11.5px;color:var(--muted);">Estimated from HRV</div>
+          </div>
+        </div>
+        <div class="stress-note" id="stressNote">
+          Run an analysis to see your HRV-based stress estimate here. This is an informational estimate, not a medical diagnosis.
+        </div>
+      </div>
+    </div>
+
+    <div class="card insights-card" style="margin-top:20px;">
+      <div class="insights-head">
+        <div class="leaf">🌿</div>
+        <div>
+          <h3>Health Insights</h3>
+          <p id="insightsSummary">Run an analysis to get personalized recommendations.</p>
+        </div>
+      </div>
+      <div id="insightsList">
+        <div class="insight-item"><div class="ic">💧</div><div><b>Stay Hydrated</b><span>Drink enough water throughout the day.</span></div></div>
+        <div class="insight-item"><div class="ic">🌙</div><div><b>Get Quality Sleep</b><span>Aim for 7–9 hours of sleep.</span></div></div>
+        <div class="insight-item"><div class="ic">🏃</div><div><b>Stay Active</b><span>Regular physical activity improves heart health.</span></div></div>
+        <div class="insight-item"><div class="ic">🧘</div><div><b>Manage Stress</b><span>Try meditation or deep breathing.</span></div></div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script src="js/signal-waves.js?v=2"></script>
+<script src="js/dashboard.js?v=2"></script>
+<script src="js/webcam.js?v=2"></script>
+<script src="js/challenge.js?v=2"></script>   <!-- v2: baseline -> challenge -> recovery -->
+<script src="js/people.js?v=2"></script>      <!-- v2: multi-person -->
+<script src="js/ranges.js?v=2"></script>      <!-- v2: typical ranges + status under every number -->
+<script src="js/features.js?v=2"></script>    <!-- v2: feature strip + ?feature= deep links -->
+</body>
+</html>

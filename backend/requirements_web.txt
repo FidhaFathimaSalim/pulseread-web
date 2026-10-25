@@ -1,0 +1,17 @@
+# Install these IN ADDITION to your existing project requirements.txt
+# (one set into venv_pulseread for app.py, one set into venv_openrppg for live_server.py —
+# see README_WEB.md for exactly which package goes where).
+
+flask>=3.0
+flask-cors>=4.0
+flask-socketio>=5.3
+python-socketio>=5.11
+reportlab>=4.0
+
+# live_server.py also needs numpy + opencv-python, but your existing
+# requirements.txt already installs opencv_python — numpy comes with it.
+
+# Optional but recommended for live_server.py in anything beyond casual local
+# use: eventlet gives Flask-SocketIO real (non-polling) WebSocket support.
+#   pip install eventlet
+# and change `async_mode='threading'` to `async_mode='eventlet'` in live_server.py.
